@@ -31,7 +31,7 @@ jobs:
 
     # 4. 编译项目 (在这里就提前锁定 win-x64 架构)
     - name: Build Application
-      run: dotnet build SimpVid_Gist_WPF.sln --configuration Release -r win-x64 --no-restore
+      run: dotnet build SimpVid_Gist_WPF.slnx --configuration Release -r win-x64 --no-restore
 
     # 5. 发布并打包（保持架构一致）
     - name: Publish Executable
