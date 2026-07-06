@@ -1,0 +1,36 @@
+﻿<Window x:Class="SimpVid_Gist_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpVid_Gist_WPF"
+        mc:Ignorable="d"
+        Title="SimpVid Gist" Height="580" Width="450">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+            <TextBlock FontSize="24" Margin="0,0,0,10" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="Bold">SimpVid Gist</TextBlock>
+            <TextBlock Margin="0,0,0,20" TextWrapping="Wrap" FontFamily="Segoe UI Variable">Extract and summarize YouTube video transcripts. Provide an API key to also generate a summary.</TextBlock>
+
+            <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="SemiBold">Video URL or ID</TextBlock>
+            <TextBox Name="UrlTextBox" Height="25" FontFamily="Segoe UI Variable"/>
+
+            <TextBlock Margin="0,10,0,5" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="SemiBold">AI Base URL (API Endpoint)</TextBlock>
+            <TextBox Name="BaseUrlTextBox" Height="25" FontFamily="Segoe UI Variable"/>
+
+            <TextBlock Margin="0,10,0,5" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="SemiBold">Model Name</TextBlock>
+            <TextBox Name="ModelTextBox" Height="25" FontFamily="Segoe UI Variable" Text=""/>
+
+            <TextBlock Margin="0,10,0,5" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="SemiBold">AI API key</TextBlock>
+            <PasswordBox Name="ApiKeyTextBox" Height="25" FontFamily="Segoe UI Variable" PasswordChar="*"/>
+
+            <Button Background="SkyBlue" x:Name="ExtractButton" Margin="0,20,0,20" Height="25" FontFamily="Segoe UI Variable" Click="ExtractButton_Click">Extract Transcript</Button>
+            <Button Background="Violet" x:Name="SummarizeButton" Margin="0,0,0,20" Height="25" FontFamily="Segoe UI Variable" Click="SummarizeButton_Click" IsEnabled="False">Summarize Transcript</Button>
+
+            <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="Bold">Transcript</TextBlock>
+            <TextBox x:Name="TranscriptTextBox" MinHeight="100" FontFamily="Segoe UI Variable" IsReadOnly="True" AcceptsReturn="True"/>
+
+            <TextBlock Margin="0,10,0,10" TextWrapping="Wrap" FontFamily="Segoe UI Variable" FontWeight="Bold">Summary</TextBlock>
+            <TextBox x:Name="SummaryTextBox" MinHeight="100" FontFamily="Segoe UI Variable" IsReadOnly="True" AcceptsReturn="True"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
