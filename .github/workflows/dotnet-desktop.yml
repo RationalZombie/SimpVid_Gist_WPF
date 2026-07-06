@@ -29,11 +29,11 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore SimpVid_Gist_WPF.slnx
 
-    # 4. 编译项目 (Release 模式)
+    # 4. 编译项目 (在这里就提前锁定 win-x64 架构)
     - name: Build Application
-      run: dotnet build SimpVid_Gist_WPF.slnx --configuration Release --no-restore
+      run: dotnet build SimpVid_Gist_WPF.sln --configuration Release -r win-x64 --no-restore
 
-    # 5. 发布并打包（生成独立可执行文件单文件）
+    # 5. 发布并打包（保持架构一致）
     - name: Publish Executable
       run: |
         dotnet publish SimpVid_Gist_WPF/SimpVid_Gist_WPF.csproj `
