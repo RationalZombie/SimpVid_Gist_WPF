@@ -1,41 +1,39 @@
-name: .NET 10.0 Windows Build
+name: .NET 10.0 Production Release
 
-# 触发条件：当推送到 main 分支时触发
+# 触发条件：修改为只有当创建、发布、或编辑 Release 时触发
 on:
-  push:
-    branches: [ "main" ]
+  release:
+    types: [published]
 
 jobs:
   build:
-    # 由于 WPF 是 Windows 平台专用的 UI 框架，编译必须在 windows 运行器上进行
     runs-on: windows-latest
+
+    permissions:
+      contents: write # 关键权限：允许 Actions 往你的 Release 页面写入并上传打包好的文件
 
     steps:
     # 1. 检出仓库代码
     - name: Checkout Source Code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # 完整检出，有利于后续的版本号生成（如果需要）
+        fetch-depth: 0
 
     # 2. 安装与配置 .NET 10.0 SDK
     - name: Setup .NET 10.0
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.x' # 动态匹配最新的 .NET 10.0 补丁版本
+        dotnet-version: '10.0.x'
 
     # 3. 还原 NuGet 依赖包
     - name: Restore Dependencies
       run: dotnet restore SimpVid_Gist_WPF.sln
 
-    # 4. 编译项目 (以 Release 模式进行，并关闭自签名)
+    # 4. 编译项目 (Release 模式)
     - name: Build Application
       run: dotnet build SimpVid_Gist_WPF.sln --configuration Release --no-restore
 
-    # 5. （可选）执行单元测试，如果未来你编写了测试项目的话
-    # - name: Execute Unit Tests
-    #   run: dotnet test --no-build --verbosity normal
-
-    # 6. 发布并打包（生成独立可执行文件单文件，方便用户下载即用）
+    # 5. 发布并打包（生成独立可执行文件单文件）
     - name: Publish Executable
       run: |
         dotnet publish SimpVid_Gist_WPF/SimpVid_Gist_WPF.csproj `
@@ -47,9 +45,12 @@ jobs:
           -p:SelfContained=false `
           --no-build
 
-    # 7. 将编译好的程序上传为 Artifact，供你在 GitHub Actions 页面直接下载
-    - name: Upload Build Artifact
-      uses: actions/artifacts-upload@v4
+    # 6. 核心步骤：直接将编译生成的 .exe 上传到触发该工作流的 Release 页面中
+    - name: Upload Binary to GitHub Release
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: SimpVid-Gist-Windows-x64
-        path: ./publish/
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./publish/SimpVid_Gist_WPF.exe # 指向编译出的程序路径（请根据你的输出文件名微调）
+        asset_name: SimpVid_Gist_WPF.exe # 用户下载时看到的文件名
+        tag: ${{ github.ref }}
+        overwrite: true
