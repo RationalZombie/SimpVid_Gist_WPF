@@ -26,12 +26,11 @@ jobs:
       with:
         dotnet-version: '10.0.x'
 
-    # 3. 还原 NuGet 依赖
+    # 3. 还原 NuGet 依赖（在这里就必须指定目标运行时，生成 project.assets.json 里的目标架构）
     - name: Restore Dependencies
-      run: dotnet restore SimpVid_Gist_WPF.slnx
+      run: dotnet restore SimpVid_Gist_WPF.slnx -r win-x64
 
-    # 4. 直接一步到位发布（解决 NETSDK1134 报错）
-    # 直接对 .csproj 指定 -r 参数，.NET 会自动在内部用正确的架构先编译再打包
+    # 4. 直接一步到位发布
     - name: Publish Executable
       run: |
         dotnet publish SimpVid_Gist_WPF/SimpVid_Gist_WPF.csproj `
@@ -40,8 +39,7 @@ jobs:
           --output ./publish `
           -p:PublishSingleFile=true `
           -p:PublishReadyToRun=true `
-          -p:SelfContained=false `
-          --no-restore
+          -p:SelfContained=false
 
     # 5. 自动根据你的 Tag 创建一个 GitHub Release，并将 .exe 作为附件挂载上去
     - name: Create Release and Upload Binary
