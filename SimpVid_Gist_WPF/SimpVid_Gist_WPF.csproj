@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>0AC69FFF-1BF8-4C05-B847-7DED3F73E83B_.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="0AC69FFF-1BF8-4C05-B847-7DED3F73E83B_.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="YoutubeExplode" Version="6.6.0" />

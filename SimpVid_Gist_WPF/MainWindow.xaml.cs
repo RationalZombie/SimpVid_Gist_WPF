@@ -39,7 +39,6 @@ namespace SimpVid_Gist_WPF
             if (string.IsNullOrWhiteSpace(videoInput))
             {
                 MessageBox.Show("Please enter a valid YouTube Video URL or ID", "Invalid Video Input", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
             }
 
             // UI Feedback while working
@@ -188,6 +187,17 @@ namespace SimpVid_Gist_WPF
             }
         }
 
+        private void Button_Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
 
+        private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
     }
 }
