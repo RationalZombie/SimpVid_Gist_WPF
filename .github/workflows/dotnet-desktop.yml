@@ -1,39 +1,37 @@
-name: .NET 10.0 Production Release
+name: .NET 10.0 Tag Production Release
 
-# 触发条件：修改为只有当创建、发布、或编辑 Release 时触发
+# 1. 触发条件：修改为只有当你推送到符合 v* 格式的 tag 时触发（例如 v1.0, v2.1.3）
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
     runs-on: windows-latest
 
     permissions:
-      contents: write # 关键权限：允许 Actions 往你的 Release 页面写入并上传打包好的文件
+      contents: write # 允许自动创建或修改 Release 页面并上传文件
 
     steps:
-    # 1. 检出仓库代码
+    # 1. 检出代码
     - name: Checkout Source Code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    # 2. 安装与配置 .NET 10.0 SDK
+    # 2. 安装配置 .NET 10.0 SDK
     - name: Setup .NET 10.0
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
-    # 3. 还原 NuGet 依赖包
+    # 3. 还原 NuGet 依赖
     - name: Restore Dependencies
       run: dotnet restore SimpVid_Gist_WPF.slnx
 
-    # 4. 编译项目 (在这里就提前锁定 win-x64 架构)
-    - name: Build Application
-      run: dotnet build SimpVid_Gist_WPF.slnx --configuration Release -r win-x64 --no-restore
-
-    # 5. 发布并打包（保持架构一致）
+    # 4. 直接一步到位发布（解决 NETSDK1134 报错）
+    # 直接对 .csproj 指定 -r 参数，.NET 会自动在内部用正确的架构先编译再打包
     - name: Publish Executable
       run: |
         dotnet publish SimpVid_Gist_WPF/SimpVid_Gist_WPF.csproj `
@@ -43,14 +41,15 @@ jobs:
           -p:PublishSingleFile=true `
           -p:PublishReadyToRun=true `
           -p:SelfContained=false `
-          --no-build
+          --no-restore
 
-    # 6. 核心步骤：直接将编译生成的 .exe 上传到触发该工作流的 Release 页面中
-    - name: Upload Binary to GitHub Release
+    # 5. 自动根据你的 Tag 创建一个 GitHub Release，并将 .exe 作为附件挂载上去
+    - name: Create Release and Upload Binary
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ./publish/SimpVid_Gist_WPF.exe # 指向编译出的程序路径（请根据你的输出文件名微调）
-        asset_name: SimpVid_Gist_WPF.exe # 用户下载时看到的文件名
+        file: ./publish/SimpVid_Gist_WPF.exe
+        asset_name: SimpVid_Gist_WPF.exe
         tag: ${{ github.ref }}
         overwrite: true
+        release_name: "Release ${{ github.ref_name }}" # 自动将 Tag 名作为 Release 标题
