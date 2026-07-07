@@ -2,7 +2,7 @@
 
 A lightweight, universal YouTube video transcript extractor and AI-powered summarizer built with WPF (.NET).
 
-**Up until now, only arm64 version is available.**
+- Supports x86-based systems.
 
 ## Introduction
 
