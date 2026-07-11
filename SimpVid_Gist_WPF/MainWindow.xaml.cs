@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,9 +14,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using YoutubeExplode;
 using YoutubeExplode.Videos.ClosedCaptions;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
 
 
 namespace SimpVid_Gist_WPF
@@ -28,8 +29,8 @@ namespace SimpVid_Gist_WPF
         {
             InitializeComponent();
 
-            // Hook up the click event to our handler
-            ExtractButton.Click += ExtractButton_Click;
+            // Load previous user configurations
+            LoadFromAppData();
         }
 
         private async void ExtractButton_Click(object sender, RoutedEventArgs e)
@@ -104,7 +105,7 @@ namespace SimpVid_Gist_WPF
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                MessageBox.Show("Please enter your AI API key first", "AI API key Required", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please enter your AI API key.", "AI API key Required", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             if (string.IsNullOrWhiteSpace(transcript) || transcript.StartsWith("Error"))
@@ -197,6 +198,81 @@ namespace SimpVid_Gist_WPF
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 DragMove();
+            }
+        }
+
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            string dataToSave = BaseUrlTextBox.Text + "\n" + ModelTextBox.Text;
+            SaveToAppData("userdata.txt", dataToSave);
+        }
+        /// <summary>
+        /// Save user configurations
+        /// </summary>
+
+        private void SaveToAppData(string fileName, string content)
+        {
+            try
+            {
+                // 1. 获取 AppData\Roaming 路径
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+                // 2. 拼接你自己的应用程序文件夹名称（防止污染根目录）
+                string myAppFolder = System.IO.Path.Combine(appDataPath, "SimpVid Gist");
+
+                // 3. 检查文件夹是否存在，如果不存在则创建
+                if (!Directory.Exists(myAppFolder))
+                {
+                    Directory.CreateDirectory(myAppFolder);
+                }
+
+                // 4. 拼接完整的文件路径
+                string filePath = System.IO.Path.Combine(myAppFolder, fileName);
+
+                // 5. 写入文件（此处使用 UTF-8 编码，若文件已存在则覆盖）
+                File.WriteAllText(filePath, content, Encoding.UTF8);
+                MessageBox.Show($"Successfully saved.\nAt: {filePath}\nThe next time you open SimpVid Gist, your data will be automatically read.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"保存失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        /// <summary>
+        /// Read user configurations
+        /// </summary>
+        private void LoadFromAppData()
+        {
+            try
+            {
+                // Get & Combine Path
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string filePath = System.IO.Path.Combine(appDataPath, "SimpVid Gist", "userdata.txt");
+
+                // If file exists, read the configuration.
+                if (File.Exists(filePath))
+                {
+                    // Read the file by line
+                    string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
+
+                    // Fill in textboxes
+                    if (lines.Length >= 1)
+                    {
+                        BaseUrlTextBox.Text = lines[0];
+                    }
+                    if (lines.Length >= 2)
+                    {
+                        ModelTextBox.Text = lines[1];
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // What to do if load failed.
+                MessageBox.Show($"Failed to load save data:\n{ex.Message}", "", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
