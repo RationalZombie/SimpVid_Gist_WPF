@@ -2,6 +2,8 @@
 
 A lightweight, universal YouTube video transcript extractor and AI-powered summarizer built with WPF (.NET).
 
+- Supports x86-based systems.
+
 ## Introduction
 
 **SimpVid Gist** is designed to help users quickly grasp the core content of YouTube videos. By combining the powerful `YoutubeExplode` parsing library with an adaptive AI interface, this tool allows you to extract full English transcripts with one click and connect to any OpenAI-compliant AI platform (such as OpenAI, DeepSeek, Groq, Ollama, etc.) for efficient, cost-effective summarization either in the cloud or locally.
