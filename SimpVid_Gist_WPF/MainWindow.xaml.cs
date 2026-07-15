@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using YoutubeExplode;
 using YoutubeExplode.Videos.ClosedCaptions;
+using Microsoft.Win32;
+using System.Xml;
 
 
 namespace SimpVid_Gist_WPF
@@ -274,6 +276,71 @@ namespace SimpVid_Gist_WPF
                 // What to do if load failed.
                 MessageBox.Show($"Failed to load save data:\n{ex.Message}", "", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void WriteInContent()
+        {
+            string transcript = TranscriptTextBox.Text.Trim();
+            string summary = SummaryTextBox.Text.Trim();
+
+            // 2. Initialize file save dialog box.
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            saveFileDialog.DefaultExt = "txt";
+            saveFileDialog.FileName = "SimpVid_Export_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
+            // 3. If user clicked save...
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    //4. Put together two parts of things.
+                    StringBuilder fileContent = new StringBuilder();
+                    fileContent.AppendLine("========================================");
+                    fileContent.AppendLine("           YOUTUBE TRANSCRIPT           ");
+                    fileContent.AppendLine("========================================");
+                    fileContent.AppendLine(string.IsNullOrWhiteSpace(transcript) ? "[No Transcript Available]" : transcript);
+
+                    if (!string.IsNullOrEmpty(summary))
+                    {
+                        fileContent.AppendLine();
+                        fileContent.AppendLine("========================================");
+                        fileContent.AppendLine("               AI SUMMARY               ");
+                        fileContent.AppendLine("========================================");
+                        fileContent.AppendLine(string.IsNullOrWhiteSpace(summary) ? "[No Summary Generated]" : summary);
+                    }
+
+                    //5. Write text to user-specified file path.
+                    File.WriteAllText(saveFileDialog.FileName, fileContent.ToString(), Encoding.UTF8);
+
+                    //6. Successful MessageBox
+                    MessageBox.Show($"File Successfully Saved to\n{saveFileDialog.FileName}", "", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to export file: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Save to *.txt file.
+        /// </summary>
+
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. If two fields are empty, do not export.
+            if (!SummarizeButton.IsEnabled)
+            {
+                MessageBox.Show("Please extract transcript first","Nothing Saved",MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                WriteInContent();
+            }
+
         }
     }
 }
