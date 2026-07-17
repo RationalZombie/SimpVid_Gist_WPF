@@ -13,54 +13,46 @@
         </Grid.RowDefinitions>
         <DockPanel MouseDown="DockPanel_MouseDown" Cursor="SizeAll" Background="Transparent" Grid.Row="0">
             <TextBlock Margin="16,0,0,0" FontSize="24" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center">SimpVid Gist</TextBlock>
-            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Cursor="Arrow">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Background" Value="#FE6584"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF4C70"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
+            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Cursor="Hand" Background="#FE6584">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
-                        <Border>
-                            <Border Width="50"
-                                        Height="25"
-                                        CornerRadius="12.5"
-                                        Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center"
-                                                      HorizontalAlignment="Center"/>
-                            </Border>
+                        <Border x:Name="Border"
+                                Width="50"
+                                CornerRadius="15"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#FF4C70"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="DarkRed"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Button.Template>
-
             </Button>
-            <Button Margin="0,0,10,0" Name="Button_Save" Content="Save" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Save_Click" Cursor="Arrow">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Background" Value="LightGreen"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="DarkSeaGreen"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
+            
+            <Button Background="LightSeaGreen"
+                Margin="0,0,10,0" Name="Button_Save" Content="Save" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Save_Click" Cursor="Arrow">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
-                        <Border>
-                            <Border Width="50"
-                                        Height="25"
-                                        CornerRadius="12.5"
-                                        Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center"
-                                                      HorizontalAlignment="Center"/>
-                            </Border>
+                        <Border x:Name="Border"
+                                Width="50"
+                                CornerRadius="15"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="SeaGreen"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="DarkOliveGreen"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Button.Template>
 
