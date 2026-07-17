@@ -1,8 +1,15 @@
 # SimpVid Gist WPF
 
-A lightweight, universal YouTube video transcript extractor and AI-powered summarizer built with WPF (.NET).
+A lightweight, universal YouTube video transcript extractor and AI-powered summarizer built with `WPF (.NET 10.0)`.
 
-- Supports x86-based systems.
+Credit: Gemini 3.5 Thinking & RationalZombie
+
+Lowest compatible OS: `Windows 7` (Untested)
+
+Sample on `Windows 11`:
+
+<img width="288" height="444" alt="截屏2026-07-17 11 35 07" src="https://github.com/user-attachments/assets/22eb039e-5d76-45f5-9152-296e2e54c653" />
+
 
 ## Introduction
 
