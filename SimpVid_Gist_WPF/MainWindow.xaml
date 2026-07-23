@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpVid_Gist_WPF"
         mc:Ignorable="d" FontFamily="Segoe UI Variable" WindowStyle="None"
+        Title="SimpVid Gist"
         Height="680" Width="450">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <DockPanel MouseDown="DockPanel_MouseDown" Cursor="SizeAll" Background="Transparent" Grid.Row="0">
+        <DockPanel MouseDown="DockPanel_MouseDown" Background="Transparent" Grid.Row="0">
             <TextBlock Margin="16,0,0,0" FontSize="24" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center">SimpVid Gist</TextBlock>
             <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Cursor="Hand" Background="#FE6584">
                 <Button.Template>
@@ -62,7 +63,11 @@
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
             <StackPanel Margin="16">
-                <TextBlock Margin="0,0,0,20" TextWrapping="Wrap">Extract and summarize YouTube video transcripts. Provide an API key to also generate a summary. The default language is English</TextBlock>
+                <TextBlock Margin="0,0,0,20" TextWrapping="Wrap">
+                    Extract and summarize YouTube video transcripts. 
+                    Provide an API key to also generate a summary. 
+                    The default language is English.
+                </TextBlock>
 
                 <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontWeight="SemiBold">Video URL or ID</TextBlock>
                 <TextBox Name="UrlTextBox"/>
