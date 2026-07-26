@@ -201,14 +201,6 @@ namespace SimpVid_Gist_WPF
             Close();
         }
 
-        private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
@@ -346,6 +338,11 @@ namespace SimpVid_Gist_WPF
                 WriteInContent();
             }
 
+        }
+
+        private void Button_Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
         }
     }
 }

@@ -7,14 +7,21 @@
         mc:Ignorable="d" WindowStyle="None"
         Title="SimpVid Gist"
         Height="750" Width="450">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="50"
+                      GlassFrameThickness="0"
+                      ResizeBorderThickness="6"/>
+    </WindowChrome.WindowChrome>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <DockPanel MouseDown="DockPanel_MouseDown" Background="Transparent" Grid.Row="0">
+        <DockPanel Background="Transparent" Grid.Row="0" Margin="0,10,0,0">
             <TextBlock Margin="16,0,0,0" FontSize="24" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center">SimpVid Gist</TextBlock>
-            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Cursor="Hand" Background="#FE6584">
+            <TextBlock Margin="4,0,0,0" Foreground="Gray" FontSize="14" TextWrapping="Wrap" DockPanel.Dock="Left" VerticalAlignment="Bottom">v1.4.0</TextBlock>
+            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Cursor="Hand" Background="#FE6584"
+                    WindowChrome.IsHitTestVisibleInChrome="True">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Border"
@@ -34,9 +41,31 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            
+            <Button Background="#FFA500" ToolTip="Minimize"
+                    WindowChrome.IsHitTestVisibleInChrome="True"
+                Margin="0,0,10,0" Name="Button_Minimize" Content="─" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Minimize_Click" Cursor="Hand" FontWeight="Bold" FontSize="20">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                Width="30"
+                                CornerRadius="15"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#CC8400"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#996300"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
             <Button Background="LightSeaGreen"
-                Margin="0,0,10,0" Name="Button_Save" Content="Save" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Save_Click" Cursor="Arrow">
+                    WindowChrome.IsHitTestVisibleInChrome="True"
+                Margin="0,0,10,0" Name="Button_Save" Content="Export" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Save_Click" Cursor="Arrow">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Border"
@@ -109,10 +138,7 @@
                     <TextBox x:Name="SummaryTextBox" MinHeight="100" IsReadOnly="True" AcceptsReturn="True"/>
                     </StackPanel>
                 </GroupBox>
-
             </StackPanel>
         </ScrollViewer>
-
     </Grid>
-    
 </Window>
