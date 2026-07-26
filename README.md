@@ -47,4 +47,4 @@ The application features the following input and output components:
 
 ## License
 
-This project is open-source and licensed under the **MIT License**.
+This project is open-source and licensed under the **GPL v3.0 License**.
