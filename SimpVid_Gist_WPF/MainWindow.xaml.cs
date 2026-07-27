@@ -48,8 +48,9 @@ namespace SimpVid_Gist_WPF
                 var trackManifest = await _youtubeClient.Videos.ClosedCaptions.GetManifestAsync(videoInput);
 
                 // 2. Grab track with specified language
+                // Default Fallback: English
                 string targetLangCode = (LanguageCodeComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "en";
-
+                
                 var trackInfo = trackManifest.GetByLanguage(targetLangCode)
                                 ?? trackManifest.Tracks.FirstOrDefault();
 
@@ -93,12 +94,12 @@ namespace SimpVid_Gist_WPF
             }
         }
         /// <summary>
-        /// Step 2: Handle Self-service AI summarization
+        /// Handle Self-service AI summarization
         /// </summary>
 
         private async void SummarizeButton_Click(object sender, RoutedEventArgs e)
         {
-            // Securely grab the key from PasswordBox
+            // Grab user information
             string apiKey = ApiKeyTextBox.Password.Trim();
             string transcript = TranscriptTextBox.Text.Trim();
             string apiUrl = BaseUrlTextBox.Text.Trim();
@@ -156,18 +157,18 @@ namespace SimpVid_Gist_WPF
             {
                 ["model"] = modelName,
                 ["messages"] = new JsonArray
-        {
-            new JsonObject
-            {
-                ["role"] = "system",
-                ["content"] = "You are an expert assistant. Summarize the following YouTube transcript into clear, structured paragraphs. You may use key bullet points."
-            },
-            new JsonObject
-            {
-                ["role"] = "user",
-                ["content"] = transcriptContent
-            }
-        },
+                {
+                    new JsonObject
+                    {
+                        ["role"] = "system",
+                        ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points."
+                    },
+                    new JsonObject
+                    {
+                        ["role"] = "user",
+                        ["content"] = transcriptContent
+                    }
+                },
                 ["temperature"] = 0.5
             };
 
@@ -254,7 +255,6 @@ namespace SimpVid_Gist_WPF
             }
             catch (Exception ex)
             {
-                // What to do if load failed.
                 MessageBox.Show($"Failed to load save data:\n{ex.Message}", "", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -327,5 +327,6 @@ namespace SimpVid_Gist_WPF
         {
             WindowState = WindowState.Minimized;
         }
+
     }
 }
