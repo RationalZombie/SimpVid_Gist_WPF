@@ -21,7 +21,7 @@
         <DockPanel Grid.Row="0" Margin="0,5,0,5" VerticalAlignment="Center">
             <TextBlock Margin="16,0,0,0" FontSize="24" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center">SimpVid Gist</TextBlock>
             <TextBlock Margin="4,0,0,0" Foreground="Gray" FontSize="14" TextWrapping="Wrap" DockPanel.Dock="Left" VerticalAlignment="Bottom">v1.3.3</TextBlock>
-            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Cursor="Hand" Background="#FE6584"
+            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Background="#FE6584"
                     WindowChrome.IsHitTestVisibleInChrome="True">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
@@ -44,7 +44,7 @@
             </Button>
             <Button Background="#FFA500" ToolTip="Minimize"
                     WindowChrome.IsHitTestVisibleInChrome="True"
-                Margin="0,0,10,0" Name="Button_Minimize" Content="─" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Minimize_Click" Cursor="Hand" FontWeight="Bold" FontSize="20">
+                Margin="0,0,10,0" Name="Button_Minimize" Content="-" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Minimize_Click" FontWeight="Bold" FontSize="20">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Border"
