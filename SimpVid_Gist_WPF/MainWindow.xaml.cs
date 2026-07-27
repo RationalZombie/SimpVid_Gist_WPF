@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using YoutubeExplode;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 
 namespace SimpVid_Gist_WPF
@@ -41,7 +43,7 @@ namespace SimpVid_Gist_WPF
 
             // UI Feedback while working
             ExtractButton.IsEnabled = false;
-            TranscriptTextBox.Text = "Fetching transcript tracks...";
+            ExtractButton.Content = "Fetching transcript tracks...";
             try
             {
                 // 1. Fetch the caption tracks available for the video
@@ -57,7 +59,7 @@ namespace SimpVid_Gist_WPF
 
                 if (trackInfo != null)
                 {
-                    TranscriptTextBox.Text = "Downloading transcript...";
+                    ExtractButton.Content = "Downloading transcript...";
 
                     // 3. Download the actual transcript contents
                     var closedCaptionTrack = await _youtubeClient.Videos.ClosedCaptions.GetAsync(trackInfo);
@@ -91,6 +93,7 @@ namespace SimpVid_Gist_WPF
             {
                 // Always re-enable the button when done
                 ExtractButton.IsEnabled = true;
+                ExtractButton.Content = "Extract Transcript";
             }
         }
         /// <summary>
@@ -129,12 +132,16 @@ namespace SimpVid_Gist_WPF
             // Lock UI elements during network traffic
             SummarizeButton.IsEnabled = false;
             ExtractButton.IsEnabled = false;
-            SummaryTextBox.Text = "Analyzing transcript & generating summary...";
-
+            SummarizeButton.Content = "Waiting for server to respond...";
             try
             {
-                string summaryResult = await CallAiApiAsync(apiKey, transcript, apiUrl, modelName);
-                SummaryTextBox.Text = summaryResult;
+                SummaryTextBox.Text = "";
+                // Await each chunk as it arrives from the server
+                await foreach (string chunk in CallAiApiStreamAsync(apiKey, transcript, apiUrl, modelName))
+                {
+                    // Use AppendText for better performance instead of +=
+                    SummaryTextBox.AppendText(chunk);
+                }
             }
             catch (Exception ex)
             {
@@ -144,32 +151,34 @@ namespace SimpVid_Gist_WPF
             {
                 SummarizeButton.IsEnabled = true;
                 ExtractButton.IsEnabled = true;
+                SummarizeButton.Content = "Summarize Transcript";
+
             }
         }
 
         /// <summary>
-        /// Universal HTTP wrapper compatible with standard AI endpoints
+        /// Universal HTTP wrapper for standard AI endpoints, now supporting Streaming!
         /// </summary>
-        private async Task<string> CallAiApiAsync(string apiKey, string transcriptContent, string apiUrl, string modelName)
+        private async IAsyncEnumerable<string> CallAiApiStreamAsync(string apiKey, string transcriptContent, string apiUrl, string modelName)
         {
-            // 使用 JsonObject 避免反射序列化异常
             var requestBody = new JsonObject
             {
                 ["model"] = modelName,
                 ["messages"] = new JsonArray
-                {
-                    new JsonObject
-                    {
-                        ["role"] = "system",
-                        ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points."
-                    },
-                    new JsonObject
-                    {
-                        ["role"] = "user",
-                        ["content"] = transcriptContent
-                    }
-                },
-                ["temperature"] = 0.5
+        {
+            new JsonObject
+            {
+                ["role"] = "system",
+                ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points."
+            },
+            new JsonObject
+            {
+                ["role"] = "user",
+                ["content"] = transcriptContent
+            }
+        },
+                ["temperature"] = 0.5,
+                ["stream"] = true // 1. Tell the API we want a stream back
             };
 
             string jsonPayload = requestBody.ToJsonString();
@@ -179,26 +188,62 @@ namespace SimpVid_Gist_WPF
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.SendAsync(request);
-                string responseString = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
+                // 2. Use ResponseHeadersRead to start processing the moment the server connects, instead of waiting for the full download
+                using (HttpResponseMessage response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    throw new Exception($"({response.StatusCode}) Details: {responseString}");
-                }
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string error = await response.Content.ReadAsStringAsync();
+                        throw new Exception($"({response.StatusCode}) Details: {error}");
+                    }
 
-                using (JsonDocument doc = JsonDocument.Parse(responseString))
-                {
-                    JsonElement root = doc.RootElement;
-                    string rawSummary = root.GetProperty("choices")[0]
-                                            .GetProperty("message")
-                                            .GetProperty("content")
-                                            .GetString();
-                    return rawSummary?.Trim() ?? "AI returned an empty response.";
+                    // 3. Read the stream line by line
+                    using (Stream stream = await response.Content.ReadAsStreamAsync())
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            string line = await reader.ReadLineAsync();
+                            if (string.IsNullOrWhiteSpace(line)) continue;
+
+                            // 4. Server-Sent Events (SSE) usually prefix data with "data:"
+                            if (line.StartsWith("data:"))
+                            {
+                                string data = line.Substring(5).Trim();
+
+                                // The stream tells us it's finished by sending [DONE]
+                                if (data == "[DONE]") break;
+
+                                JsonDocument doc;
+                                try
+                                {
+                                    doc = JsonDocument.Parse(data);
+                                }
+                                catch
+                                {
+                                    continue; // Skip any malformed fragments safely
+                                }
+
+                                using (doc)
+                                {
+                                    var choices = doc.RootElement.GetProperty("choices");
+                                    if (choices.GetArrayLength() > 0)
+                                    {
+                                        var delta = choices[0].GetProperty("delta");
+
+                                        // In streaming mode, the text is inside 'delta.content' instead of 'message.content'
+                                        if (delta.TryGetProperty("content", out JsonElement contentElement))
+                                        {
+                                            yield return contentElement.GetString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-
         private void Button_Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
