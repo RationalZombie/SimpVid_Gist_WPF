@@ -8,7 +8,8 @@ Lowest compatible OS: `Windows 10 1607`
 
 Sample on `Windows 11`:
 
-<img width="392" height="664" alt="截屏2026-07-26 16 32 19" src="https://github.com/user-attachments/assets/e3a18dda-c6cb-42f6-9f21-3d7e5993a17b" />
+<img width="397" height="663" alt="截屏2026-07-27 20 22 02" src="https://github.com/user-attachments/assets/6ae86b24-da98-44a0-a7c3-541a5199b176" />
+
 
 
 ## Introduction
@@ -47,4 +48,4 @@ The application features the following input and output components:
 
 ## License
 
-This project is open-source and licensed under the **GPL v3.0 License**.
+This project is open-source and licensed under the **MPL v2.0 License**.
