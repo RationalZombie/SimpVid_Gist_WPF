@@ -20,6 +20,7 @@ namespace SimpVid_Gist_WPF
     {
         private readonly YoutubeClient _youtubeClient = new YoutubeClient();
         private readonly HttpClient _httpClient = new HttpClient();
+        private readonly string _saveFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SimpVid Gist", "userdata.txt");
         public MainWindow()
         {
             InitializeComponent();
@@ -35,6 +36,7 @@ namespace SimpVid_Gist_WPF
             if (string.IsNullOrWhiteSpace(videoInput))
             {
                 MessageBox.Show("Please enter a valid YouTube Video URL or ID", "Invalid Video Input", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
 
             // UI Feedback while working
@@ -215,24 +217,9 @@ namespace SimpVid_Gist_WPF
         {
             try
             {
-                // 获取 AppData\Roaming 路径
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-                // 拼接你自己的应用程序文件夹名称（防止污染根目录）
-                string myAppFolder = System.IO.Path.Combine(appDataPath, "SimpVid Gist");
-
-                // 检查文件夹是否存在，如果不存在则创建
-                if (!Directory.Exists(myAppFolder))
-                {
-                    Directory.CreateDirectory(myAppFolder);
-                }
-
-                // 拼接完整的文件路径
-                string filePath = System.IO.Path.Combine(myAppFolder, fileName);
-
                 // 写入文件（此处使用 UTF-8 编码，若文件已存在则覆盖）
-                File.WriteAllText(filePath, content, Encoding.UTF8);
-                MessageBox.Show($"Successfully saved.\nAt: {filePath}\nThe next time you open SimpVid Gist, your data will be automatically read.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                File.WriteAllText(_saveFilePath, content, Encoding.UTF8);
+                MessageBox.Show($"Successfully saved.\nAt: {_saveFilePath}\nThe next time you open SimpVid Gist, your data will be automatically read.", "", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
             catch (Exception ex)
@@ -247,15 +234,11 @@ namespace SimpVid_Gist_WPF
         {
             try
             {
-                // Get & Combine Path
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string filePath = System.IO.Path.Combine(appDataPath, "SimpVid Gist", "userdata.txt");
-
                 // If file exists, read the configuration.
-                if (File.Exists(filePath))
+                if (File.Exists(_saveFilePath))
                 {
                     // Read the file by line
-                    string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
+                    string[] lines = File.ReadAllLines(_saveFilePath, Encoding.UTF8);
 
                     // Fill in textboxes
                     if (lines.Length >= 1)
