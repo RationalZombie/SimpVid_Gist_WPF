@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using YoutubeExplode;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 
 namespace SimpVid_Gist_WPF
@@ -169,7 +168,7 @@ namespace SimpVid_Gist_WPF
             new JsonObject
             {
                 ["role"] = "system",
-                ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points."
+                ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points. IMPORTANT: The VERY FIRST line of your response MUST be a single short sentence (under 80 characters, no quotes, no colons) describing the overall topic of the video — this line will be used as the file name. Leave one blank line after it, then provide the detailed summary."
             },
             new JsonObject
             {
@@ -309,11 +308,43 @@ namespace SimpVid_Gist_WPF
             string transcript = TranscriptTextBox.Text.Trim();
             string summary = SummaryTextBox.Text.Trim();
 
+            // The first line of the AI summary is the overall video info, used as the file name.
+            string overallInfo = "";
+            string detailedSummary = summary;
+            if (!string.IsNullOrEmpty(summary))
+            {
+                string[] lines = summary.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                if (lines.Length > 0)
+                {
+                    overallInfo = lines[0].Trim();
+                    if (lines.Length > 1)
+                    {
+                        detailedSummary = string.Join(Environment.NewLine, lines, 1, lines.Length - 1).Trim();
+                    }
+                }
+            }
+
+            // Build a safe file name from the overall info line.
+            string baseFileName;
+            if (string.IsNullOrWhiteSpace(overallInfo))
+            {
+                baseFileName = "SimpVid_Export_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            }
+            else
+            {
+                string safeName = overallInfo;
+                foreach (char c in Path.GetInvalidFileNameChars())
+                {
+                    safeName = safeName.Replace(c, '_');
+                }
+                baseFileName = safeName;
+            }
+
             // Initialize file save dialog box.
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
             saveFileDialog.DefaultExt = "txt";
-            saveFileDialog.FileName = "SimpVid_Export_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            saveFileDialog.FileName = baseFileName;
 
             // If user clicked save...
             if (saveFileDialog.ShowDialog() == true)
@@ -322,18 +353,22 @@ namespace SimpVid_Gist_WPF
                 {
                     // Put together two parts.
                     StringBuilder fileContent = new StringBuilder();
+                    // First line of the file: overall video info (same text as the file name).
+                    fileContent.AppendLine(string.IsNullOrWhiteSpace(overallInfo) ? "[No Overall Info]" : overallInfo);
+                    fileContent.AppendLine();
+
                     fileContent.AppendLine("========================================");
                     fileContent.AppendLine("           YOUTUBE TRANSCRIPT           ");
                     fileContent.AppendLine("========================================");
                     fileContent.AppendLine(string.IsNullOrWhiteSpace(transcript) ? "[No Transcript Available]" : transcript);
 
-                    if (!string.IsNullOrEmpty(summary))
+                    if (!string.IsNullOrEmpty(detailedSummary))
                     {
                         fileContent.AppendLine();
                         fileContent.AppendLine("========================================");
                         fileContent.AppendLine("               AI SUMMARY               ");
                         fileContent.AppendLine("========================================");
-                        fileContent.AppendLine(string.IsNullOrWhiteSpace(summary) ? "[No Summary Generated]" : summary);
+                        fileContent.AppendLine(string.IsNullOrWhiteSpace(detailedSummary) ? "[No Summary Generated]" : detailedSummary);
                     }
 
                     // Write text to user-specified file path.
