@@ -150,7 +150,7 @@ namespace SimpVid_Gist_WPF
             {
                 SummarizeButton.IsEnabled = true;
                 ExtractButton.IsEnabled = true;
-                SummarizeButton.Content = "Summarize Transcript";
+                SummarizeButton.Content = "Re-summarize Transcript";
 
             }
         }

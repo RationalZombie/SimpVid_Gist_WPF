@@ -20,8 +20,8 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0" Margin="0,5,0,5" VerticalAlignment="Center">
             <TextBlock Margin="16,0,0,0" FontSize="24" TextWrapping="Wrap" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center">SimpVid Gist</TextBlock>
-            <TextBlock Margin="4,0,0,0" Foreground="Gray" FontSize="14" TextWrapping="Wrap" DockPanel.Dock="Left" VerticalAlignment="Bottom">v1.3.5</TextBlock>
-            <Button Margin="0,0,10,0" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Background="#FE6584"
+            <TextBlock Margin="4,0,0,0" Foreground="Gray" FontSize="14" TextWrapping="Wrap" DockPanel.Dock="Left" VerticalAlignment="Bottom">v1.4</TextBlock>
+            <Button Margin="0,0,10,0" FontSize="12" Name="Button_Close" Content="Close" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Close_Click" Background="#FE6584"
                     WindowChrome.IsHitTestVisibleInChrome="True">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
@@ -44,7 +44,7 @@
             </Button>
             <Button Background="#FFA500" ToolTip="Minimize"
                     WindowChrome.IsHitTestVisibleInChrome="True"
-                Margin="0,0,10,0" Name="Button_Minimize" Content="-" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Minimize_Click" FontWeight="Bold" FontSize="20">
+                Margin="0,0,10,0" Name="Button_Minimize" Content="-" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Minimize_Click" FontWeight="Bold" FontSize="30">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Border"
@@ -64,7 +64,7 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button Background="LightSeaGreen"
+            <Button Background="LightSeaGreen" FontSize="12"
                     WindowChrome.IsHitTestVisibleInChrome="True"
                 Margin="0,0,10,0" Name="Button_Save" Content="Export" DockPanel.Dock="Right" HorizontalAlignment="Right" Height="30" Click="Button_Save_Click" Cursor="Arrow">
                 <Button.Template>
@@ -90,9 +90,8 @@
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
             <StackPanel Margin="16">
-                <TextBlock Margin="0,0,0,20" TextWrapping="Wrap">
+                <TextBlock Margin="0,0,0,20" TextWrapping="Wrap" Foreground="Gray">
                     Extract and summarize YouTube video transcripts. 
-                    Provide an API key to also generate a summary.
                 </TextBlock>
 
                 <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontWeight="SemiBold">Video URL or ID</TextBlock>
@@ -114,11 +113,13 @@
                 </Button>
 
                 <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontWeight="SemiBold">Transcript</TextBlock>
-                <TextBox x:Name="TranscriptTextBox" TextWrapping="Wrap" MinHeight="100" IsReadOnly="True" AcceptsReturn="True"/>
+                <TextBox x:Name="TranscriptTextBox" TextWrapping="Wrap" MinHeight="100" MaxHeight="200" IsReadOnly="True" AcceptsReturn="True"/>
 
-                <GroupBox Header="Summarization" Margin="0,40,0,0">
-                    <StackPanel>
-                        
+                <TextBlock Margin="0,20,0,20" TextWrapping="Wrap" Foreground="Gray">
+                    Provide an API key to also generate a summary.
+                </TextBlock>
+                <StackPanel>
+
                     <TextBlock Margin="0,0,0,5" TextWrapping="Wrap" FontWeight="SemiBold">AI Base URL (API Endpoint)</TextBlock>
                     <TextBox Name="BaseUrlTextBox" TextWrapping="Wrap"/>
 
@@ -136,8 +137,8 @@
                     <TextBlock Margin="0,0,0,10" TextWrapping="Wrap" FontWeight="SemiBold">Summary</TextBlock>
 
                     <TextBox x:Name="SummaryTextBox" TextWrapping="Wrap" MinHeight="100" IsReadOnly="True" AcceptsReturn="True"/>
-                    </StackPanel>
-                </GroupBox>
+                </StackPanel>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>
