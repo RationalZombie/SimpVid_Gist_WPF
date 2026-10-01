@@ -1,4 +1,4 @@
-# SimpVid Gist WPF - Extract `transcript` and `summarize` YouTube videos with ease. All you need is a `YouTube video link`. 
+# SimpVid Gist WPF - Extract `transcript`, `summarize`, and `export to .txt` for any YouTube videos with ease. All you need is a YouTube `video link`. 
 
 <table>
   <tr>
@@ -18,9 +18,15 @@
   </tr>
 </table>
 
-You can experience the modern Fluent Design, and even Mica transparency effect on Windows 11.
+We all know that YouTube has a `Ask Gemini` Feature.
 
-Here's what it looks like on `version 1.4`:
+<img width="132.4" height="190.6" alt="Screenshot of YouTube Ask Gemini Interface with Gemini suggestions" src="https://github.com/user-attachments/assets/673cbc12-1a32-491a-9015-a220435c7aaf" />
+
+- SimpVid Gist brings the feature of summarization (currently) to `Windows Desktop users`. More importantly, you can directly export transcript and/or summary `into a txt file, which YouTube currently cannot.`
+
+- You can experience the modern Fluent Design, and even Mica transparency effect on Windows 11.
+
+- Here's what it looks like on `version 1.4`. Recently, the UI is revamped, hope you like it.
 
 <img width="398" height="665" alt="SimpVid Gist v1.4 showing YouTube link been inserted and a successfully extracted YouTube transcript in a textbox" src="https://github.com/user-attachments/assets/697dc829-e52d-4d03-b583-7c79168fea5f" />
 
