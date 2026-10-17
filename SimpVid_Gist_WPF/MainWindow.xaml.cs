@@ -7,9 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using YoutubeExplode;
-using System.Collections.Generic;
 
 
 namespace SimpVid_Gist_WPF
@@ -36,7 +34,7 @@ namespace SimpVid_Gist_WPF
 
             if (string.IsNullOrWhiteSpace(videoInput))
             {
-                MessageBox.Show("Please enter a valid YouTube Video URL or ID", "Invalid Video Input", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please enter a valid YouTube Video URL or ID", "Invalid Video Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -51,10 +49,10 @@ namespace SimpVid_Gist_WPF
                 // 2. Grab track with specified language
                 // Default Fallback: English
                 string targetLangCode = (LanguageCodeComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "en";
-                
+                // ?. Means if not null, then...
+
                 var trackInfo = trackManifest.GetByLanguage(targetLangCode)
                                 ?? trackManifest.Tracks.FirstOrDefault();
-
 
                 if (trackInfo != null)
                 {
@@ -86,7 +84,7 @@ namespace SimpVid_Gist_WPF
             }
             catch (Exception ex)
             {
-                TranscriptTextBox.Text = $"Error retrieving transcript: {ex.Message}";
+                TranscriptTextBox.Text = $"Error retrieving transcript:\n{ex.Message}";
             }
             finally
             {
@@ -95,12 +93,13 @@ namespace SimpVid_Gist_WPF
                 ExtractButton.Content = "Extract Transcript";
             }
         }
+
         /// <summary>
         /// Handle Self-service AI summarization
         /// </summary>
-
         private async void SummarizeButton_Click(object sender, RoutedEventArgs e)
         {
+            SummaryTextBox.Text = "";
             // Grab user information
             string apiKey = ApiKeyTextBox.Password.Trim();
             string transcript = TranscriptTextBox.Text.Trim();
@@ -109,23 +108,23 @@ namespace SimpVid_Gist_WPF
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                MessageBox.Show("Please enter your AI API key.", "AI API key Required", MessageBoxButton.OK, MessageBoxImage.Information);
+                SummaryTextBox.AppendText("Sorry, an AI API key is required. Please insert your AI API key.\n");
                 return;
             }
             if (string.IsNullOrWhiteSpace(transcript) || transcript.StartsWith("Error"))
             {
-                MessageBox.Show("Please fetch a valid video transcript before summarizing.", "Transcript Empty", MessageBoxButton.OK, MessageBoxImage.Warning);
+                SummaryTextBox.AppendText("Sorry, please fetch a valid video transcript before summarizing.\n");
                 return;
             }
             if (string.IsNullOrWhiteSpace(apiUrl))
             {
-                MessageBox.Show("Please enter the AI Base URL.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                SummaryTextBox.AppendText("Sorry, please enter the AI Base URL.\nYou can click \"Save AI Base URL and Model Name\" afterwards.\n");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(modelName))
             {
-                MessageBox.Show("Please enter the Model Name.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                SummaryTextBox.AppendText("Sorry, please enter the Model Name.\nYou can click \"Save AI Base URL and Model Name\" afterwards.\n");
                 return;
             }
             // Lock UI elements during network traffic
@@ -144,7 +143,7 @@ namespace SimpVid_Gist_WPF
             }
             catch (Exception ex)
             {
-                SummaryTextBox.Text = $"AI Error: {ex.Message}";
+                SummaryTextBox.Text = $"AI Error:\n{ex.Message}";
             }
             finally
             {
@@ -168,7 +167,9 @@ namespace SimpVid_Gist_WPF
             new JsonObject
             {
                 ["role"] = "system",
-                ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points. IMPORTANT: The VERY FIRST line of your response MUST be a single short sentence (under 80 characters, no quotes, no colons) describing the overall topic of the video — this line will be used as the file name. Leave one blank line after it, then provide the detailed summary."
+                ["content"] = "You are an expert AI summarizer. Summarize the following YouTube transcript into clear, structured paragraphs. You may use bullet points. " +
+                "NOTICE: 1. The VERY FIRST line of your response MUST be a single short sentence (under 80 characters, no quotes, no colons) describing the overall topic of the video. Leave one blank line after the provided summary."
+                +"2. Avoid using Markdown. Respond with Plain Text."
             },
             new JsonObject
             {
@@ -193,7 +194,7 @@ namespace SimpVid_Gist_WPF
                     if (!response.IsSuccessStatusCode)
                     {
                         string error = await response.Content.ReadAsStringAsync();
-                        throw new Exception($"({response.StatusCode}) Details: {error}");
+                        throw new Exception($"({response.StatusCode})\nDetails:\n{error}");
                     }
 
                     // 3. Read the stream line by line
@@ -248,12 +249,12 @@ namespace SimpVid_Gist_WPF
             Close();
         }
 
-
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             string dataToSave = BaseUrlTextBox.Text + "\n" + ModelTextBox.Text;
             SaveToAppData("userdata.txt", dataToSave);
         }
+
         /// <summary>
         /// Save user configurations
         /// </summary>
@@ -269,7 +270,7 @@ namespace SimpVid_Gist_WPF
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save: {ex.Message}", "", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to save:\n{ex.Message}", "", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         /// <summary>
@@ -325,10 +326,12 @@ namespace SimpVid_Gist_WPF
             }
 
             // Build a safe file name from the overall info line.
+            string exportTime = DateTime.Now.ToString("yyyy-MM-dd, HH_mm_ss");
             string baseFileName;
-            if (string.IsNullOrWhiteSpace(overallInfo))
+            string fileFirstLine="SimpVid Gist Export at " + exportTime.Replace("_",":");
+            if (string.IsNullOrWhiteSpace(overallInfo) || overallInfo.StartsWith("Sorry"))
             {
-                baseFileName = "SimpVid_Export_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                baseFileName = "SimpVid Gist Export at " + exportTime;
             }
             else
             {
@@ -354,13 +357,13 @@ namespace SimpVid_Gist_WPF
                     // Put together two parts.
                     StringBuilder fileContent = new StringBuilder();
                     // First line of the file: overall video info (same text as the file name).
-                    fileContent.AppendLine(string.IsNullOrWhiteSpace(overallInfo) ? "[No Overall Info]" : overallInfo);
+                    fileContent.AppendLine(string.IsNullOrWhiteSpace(overallInfo) ? $"{fileFirstLine}" : overallInfo + "\n" + fileFirstLine);
                     fileContent.AppendLine();
 
                     fileContent.AppendLine("========================================");
                     fileContent.AppendLine("           YOUTUBE TRANSCRIPT           ");
                     fileContent.AppendLine("========================================");
-                    fileContent.AppendLine(string.IsNullOrWhiteSpace(transcript) ? "[No Transcript Available]" : transcript);
+                    fileContent.AppendLine(transcript);
 
                     if (!string.IsNullOrEmpty(detailedSummary))
                     {
@@ -368,7 +371,7 @@ namespace SimpVid_Gist_WPF
                         fileContent.AppendLine("========================================");
                         fileContent.AppendLine("               AI SUMMARY               ");
                         fileContent.AppendLine("========================================");
-                        fileContent.AppendLine(string.IsNullOrWhiteSpace(detailedSummary) ? "[No Summary Generated]" : detailedSummary);
+                        fileContent.AppendLine((string.IsNullOrWhiteSpace(detailedSummary) || detailedSummary.StartsWith("Sorry"))? "[No Summary Generated]" : detailedSummary);
                     }
 
                     // Write text to user-specified file path.
