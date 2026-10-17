@@ -26,9 +26,12 @@ We all know that YouTube has a `Ask Gemini` Feature.
 
 - You can experience the modern Fluent Design, and even Mica transparency effect on Windows 11.
 
-- Here's what it looks like on `version 1.4`. Recently, the UI is revamped, hope you like it.
+- Here's what it looks like, and the txt file exported on `version 1.4.1`.
 
-<img width="398" height="665" alt="SimpVid Gist v1.4 showing YouTube link been inserted and a successfully extracted YouTube transcript in a textbox" src="https://github.com/user-attachments/assets/697dc829-e52d-4d03-b583-7c79168fea5f" />
+<img width="401" height="1027" alt="SimpVid Gist v1.4.1 showing YouTube link been inserted and YouTube transcript and summary in their textboxes" src="https://github.com/user-attachments/assets/8e289224-86db-4be6-8a1a-b93910ce9558" />
+
+<img width="332" height="554" alt="A text file displaying the video summary, with a title and time." src="https://github.com/user-attachments/assets/dd968481-0b22-4595-8b70-89f274898a98" />
+
 
 ## Technical Details
 
